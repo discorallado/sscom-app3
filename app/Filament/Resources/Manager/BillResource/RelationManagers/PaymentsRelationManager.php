@@ -59,7 +59,7 @@ class PaymentsRelationManager extends RelationManager
             ->disabled()
             ->required()
             ->reactive()
-            ->default(function (RelationManager $livewire, callable $set): string {
+            ->default(function (RelationManager $livewire): string {
               $consulta = DB::table('manager_payments')
                 ->where('manager_bill_id', '=', $livewire->ownerRecord->id)
                 ->orderBy('fecha', 'DESC')
@@ -71,7 +71,7 @@ class PaymentsRelationManager extends RelationManager
               }
             })
             // ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: '$', thousandsSeparator: '.', decimalPlaces: 0))
-            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
               $set('saldo', (string)floor((int)$get('total_price') - (int)$get('abono')));
             }),
 
@@ -81,22 +81,20 @@ class PaymentsRelationManager extends RelationManager
             ->default('0')
             ->required()
             ->lte('total_price')
-            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
               $set('saldo', (string)floor((int)$get('total_price') - (int)$get('abono')));
             }),
           // ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: '$', thousandsSeparator: '.', decimalPlaces: 0)),
-
           Forms\Components\TextInput::make('saldo')
             ->label('Saldo:')
             ->disabled()
             ->default('0')
             ->reactive()
             ->required()
-            ->default(function (callable $get): string {
+            ->default(function (Forms\Get $get): string {
               return (string)$get('total_price');
             }),
           // ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: '$', thousandsSeparator: '.', decimalPlaces: 0)),
-
         ]),
 
         Forms\Components\RichEditor::make('descripcion')
@@ -107,8 +105,6 @@ class PaymentsRelationManager extends RelationManager
           ->default(function (RelationManager $livewire) {
             return $livewire->ownerRecord->manager_work_id;
           }),
-
-
 
         SpatieMediaLibraryFileUpload::make('file')
           ->label('Adjunto')
@@ -121,7 +117,6 @@ class PaymentsRelationManager extends RelationManager
 
   public function table(Table $table): Table
   {
-
     return $table
       ->columns([
         Tables\Columns\TextColumn::make('fecha'),

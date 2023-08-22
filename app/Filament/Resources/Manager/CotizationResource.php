@@ -10,8 +10,6 @@ use App\Models\Manager\Product;
 use App\Models\Manager\Work;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-// use Filament\Actions\ViewAction;
-use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -250,16 +248,16 @@ class CotizationResource extends Resource
   {
     return [
       //
-      //   RelationManagers\BillsRelationManager::class,
+      RelationManagers\BillsRelationManager::class,
     ];
   }
 
-  //   public static function getWidgets(): array
-  //   {
-  //     return [
-  //       CotizationStats::class,
-  //     ];
-  //   }
+  public static function getWidgets(): array
+  {
+    return [
+      CotizationResource\Widgets\CotizationStats::class,
+    ];
+  }
 
   public static function getPages(): array
   {
@@ -310,6 +308,7 @@ class CotizationResource extends Resource
         Forms\Components\Repeater::make('items')
           ->relationship('items')
           ->collapsible()
+          ->label(false)
           ->schema([
 
             Grid::make(12)
@@ -390,8 +389,6 @@ class CotizationResource extends Resource
                   })
                   //   ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: '$', thousandsSeparator: '.', decimalPlaces: 0))
                   ->columnSpan(2),
-
-
                 Forms\Components\TextInput::make('cantidad')
                   ->numeric()
                   ->default(1)
@@ -538,7 +535,6 @@ class CotizationResource extends Resource
           ->required(),
       ]),
 
-
       Forms\Components\Grid::make(3)->schema([
         Forms\Components\DatePicker::make('fecha')
           ->default(now())
@@ -561,7 +557,7 @@ class CotizationResource extends Resource
           ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
             $fecha = Carbon::parse($get('fecha'));
             $validez = $state;
-            $vencimiento = $fecha->addDays((int)$validez);
+            $vencimiento = $fecha->addDays((int)$validez)->format('Y-m-d');
             $set('vencimiento', $vencimiento);
           }),
 

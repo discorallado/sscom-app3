@@ -18,6 +18,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
@@ -102,7 +103,7 @@ class BillResource extends Resource
                       return $work->cotization->pluck('codigo', 'id')->toArray();
                     }
                   })
-                  ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
+                  ->afterStateUpdated(function (Get $get, \Filament\Forms\Set $set, string $state) {
                     if ((string)$get('tipo') == 'VENTA') {
                       $total_price =  (string)Cotization::find((int)$get('manager_cotization_id'))->total_price;
                       $set('total_price', $total_price);
@@ -139,7 +140,7 @@ class BillResource extends Resource
           //     'COSTO' => 'La factura se guardará como compra.',
           //   ])
           ->disabled(fn (\Filament\Forms\Get $get) => $get('manager_work_id') === null)
-          ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
+          ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, string $state) {
             if ((string)$state == 'VENTA') {
               if ($get('manager_work_id')) {
                 $set('customer',  Work::find((int)$get('manager_work_id'))?->manager_customer_id);

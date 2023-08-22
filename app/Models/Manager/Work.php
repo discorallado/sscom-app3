@@ -57,7 +57,7 @@ class Work extends Model implements HasMedia
     return $this->hasMany(Payment::class, 'manager_work_id');
   }
 
-  public function bill(): HasMany
+  public function bills(): HasMany
   {
     return $this->hasMany(Bill::class, 'manager_work_id');
   }

@@ -14,6 +14,7 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Split;
@@ -24,6 +25,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
+
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class PaymentResource extends Resource
 {
@@ -250,12 +254,14 @@ class PaymentResource extends Resource
             ->schema([
               Stack::make([
                 Tables\Columns\TextColumn::make('fecha')
+                  ->label('Fecha')
                   ->badge()
                   ->color('primary')
                   ->sortable()
                   ->searchable()
                   ->date(),
                 Tables\Columns\TextColumn::make('bill.doc')
+                  ->label('N Doc')
                   ->badge()
                   ->color('warning')
                   ->weight('bold')
@@ -268,16 +274,19 @@ class PaymentResource extends Resource
 
               Stack::make([
                 Tables\Columns\TextColumn::make('work.customer.name')
+                  ->label('Cliente')
                   ->sortable()
                   ->searchable()
                   ->icon('heroicon-s-user-group')
                   ->size('md'),
                 Tables\Columns\TextColumn::make('work.title')
+                  ->label('Proyecto')
                   ->sortable()
                   ->searchable()
                   ->icon('heroicon-o-briefcase')
                   ->size('sm'),
                 Tables\Columns\TextColumn::make('cotization.codigo')
+                  ->label('Cotizacion')
                   ->badge()
                   ->weight('bold')
                   ->sortable()
@@ -290,6 +299,7 @@ class PaymentResource extends Resource
                 ->columnSpan(4),
 
               Tables\Columns\TextColumn::make('total_price')
+                ->label('Deuda')
                 ->description('Deuda')
                 ->searchable()
                 ->extraAttributes(['class' => 'text-warning-700 dark:text-warning-500'])
@@ -326,7 +336,6 @@ class PaymentResource extends Resource
                   }
                   return null;
                 })
-
                 ->money('clp'),
             ]),
         ]),
@@ -366,6 +375,27 @@ class PaymentResource extends Resource
         //   ->words(2),
       ])
       ->defaultSort('created_at', 'desc')
+      ->groups([
+        'fecha',
+        'bill.doc',
+      ])
+      ->groupRecordsTriggerAction(
+        fn (Action $action) => $action
+          ->button()
+          ->label('Group records'),
+      )
+      ->defaultGroup('bill.doc')
+
+      //   ->groupsInDropdownOnDesktop()
+      //   ->recordClasses(
+      //     fn (Model $record) => match ($record->doc) {
+      //       null => [
+      //         'priority',
+      //         'dark:border-orange-300' => config('tables.dark_mode'),
+      //       ],
+      //       default => $record->mission,
+      //     }
+      //   )
       ->filters([
         Tables\Filters\TrashedFilter::make(),
       ])
@@ -385,7 +415,13 @@ class PaymentResource extends Resource
         // FilamentExportBulkAction::make('export'),
       ])
       ->headerActions([
-        // FilamentExportHeaderAction::make('export')
+        ExportAction::make()->exports([
+          ExcelExport::make()->fromTable()
+            ->except([
+              'bill.descripcion', 'descripcion',
+            ])
+            ->withFilename('Pagos ' . date('Y-m-d H:m:s')),
+        ]),
       ]);
   }
 

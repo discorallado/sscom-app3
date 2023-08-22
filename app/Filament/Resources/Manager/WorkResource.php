@@ -209,8 +209,7 @@ class WorkResource extends Resource
   public static function getRelations(): array
   {
     return [
-      //
-      //   RelationManagers\BillsRelationManager::class,
+      RelationManagers\BillsRelationManager::class,
     ];
   }
 
@@ -227,6 +226,7 @@ class WorkResource extends Resource
       'create' => Pages\CreateWork::route('/create'),
       'view' => Pages\ViewWork::route('/{record}'),
       'edit' => Pages\EditWork::route('/{record}/edit'),
+      'report' => Pages\ReportWork::route('/{record}/report'),
     ];
   }
 

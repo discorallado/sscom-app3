@@ -17,8 +17,8 @@ class ListCotizations extends ListRecords
     ];
   }
 
-  //   protected function getHeaderWidgets(): array
-  //   {
-  //     return CotizationResource::getWidgets();
-  //   }
+  protected function getHeaderWidgets(): array
+  {
+    return CotizationResource::getWidgets();
+  }
 }

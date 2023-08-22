@@ -24,6 +24,8 @@ class ManageProducts extends ManageRecords
 
   protected function getHeaderWidgets(): array
   {
-    return ProductResource::getWidgets();
+    return [
+      ProductResource\Widgets\ProductStats::class,
+    ];
   }
 }

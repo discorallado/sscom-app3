@@ -59,9 +59,9 @@ class Cotization extends Model implements HasMedia
     return $this->belongsTo(Work::class, 'manager_work_id',);
   }
 
-  public function bill(): HasOne
+  public function bills(): HasMany
   {
-    return $this->hasOne(Bill::class, 'manager_cotization_id');
+    return $this->hasMany(Bill::class, 'manager_cotization_id');
   }
 
   public function payments(): HasMany

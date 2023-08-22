@@ -67,16 +67,16 @@ class CustomerResource extends Resource
         Tables\Columns\TextColumn::make('rut'),
         Tables\Columns\TextColumn::make('name')
           ->limit(35)
-          ->tooltip(function (TextColumn $column): ?string {
+          ->tooltip(function (TextColumn $column, $state): ?string {
             $state = $column->getState();
-            if (\strlen($state) <= 35) {
+            if (strlen($state) <= 35) {
               return null;
             }
             return $state;
           }),
         Tables\Columns\TextColumn::make('giro')
           ->limit(25)
-          ->tooltip(function (TextColumn $column): ?string {
+          ->tooltip(function (TextColumn $column, $state): ?string {
             $state = $column->getState();
             if (strlen($state) <= 25) {
               return null;
